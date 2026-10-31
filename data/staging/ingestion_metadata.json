@@ -1,0 +1,8 @@
+{
+  "extraction_timestamp_utc": "2026-10-14T04:55:14.061517+00:00",
+  "source": "UCI Machine Learning Repository \u2014 Dataset 296",
+  "file": "/opt/airflow/project/data/raw/diabetic_data.csv",
+  "rows_extracted": 101766,
+  "rows_staged": 101766,
+  "status": "success"
+}

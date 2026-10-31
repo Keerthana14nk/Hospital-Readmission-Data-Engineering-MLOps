@@ -1,0 +1,12 @@
+{
+  "dataset_id": 296,
+  "source": "UCI Machine Learning Repository",
+  "dataset_name": "Diabetes 130-US Hospitals for Years 1999-2008",
+  "source_url": "https://archive.ics.uci.edu/dataset/296",
+  "download_timestamp_utc": "2026-09-06T18:09:40.344954+00:00",
+  "rows": 101766,
+  "columns": 50,
+  "raw_file": "C:\\Users\\vke23\\Downloads\\Hospital_Readmission_Part1\\Hospital_Readmission_Part1\\data\\raw\\diabetic_data.csv",
+  "ids_file": "C:\\Users\\vke23\\Downloads\\Hospital_Readmission_Part1\\Hospital_Readmission_Part1\\data\\raw\\IDS_mapping.csv",
+  "status": "success"
+}

@@ -1,0 +1,1731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Hospital Readmission Analytics and 30-Day Prediction Report</title>
+<style>
+@page {
+    size: A4 portrait;
+    margin: 0;
+}
+*, *:before, *:after {
+    box-sizing: border-box;
+}
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Times New Roman', Times, Georgia, serif;
+    color: #111111;
+    background-color: #FFFFFF;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+/* Exact A4 Page Container */
+.page {
+    width: 210mm;
+    height: 297mm;
+    max-height: 297mm;
+    min-height: 297mm;
+    padding: 10mm 12mm;
+    page-break-after: always;
+    page-break-inside: avoid;
+    position: relative;
+    overflow: hidden;
+    background: #FFFFFF;
+}
+
+/* Authentic Double Border */
+.border-outer {
+    border: 1px solid #000000;
+    padding: 2.5px;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+}
+.border-inner {
+    border: 1.5px solid #000000;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 14mm 16mm 14mm 16mm;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Typography */
+h1.report-title {
+    font-size: 14.5pt;
+    font-weight: bold;
+    color: #1A5276;
+    text-align: center;
+    line-height: 1.35;
+    margin: 10px 0 14px 0;
+    text-transform: uppercase;
+}
+h2.chapter-title {
+    font-size: 14.5pt;
+    font-weight: bold;
+    color: #000000;
+    text-align: center;
+    margin: 0 0 16px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+h3.section-title {
+    font-size: 11.5pt;
+    font-weight: bold;
+    color: #000000;
+    margin: 12px 0 5px 0;
+    line-height: 1.3;
+}
+h4.sub-title {
+    font-size: 10.5pt;
+    font-weight: bold;
+    color: #000000;
+    margin: 8px 0 3px 0;
+}
+p {
+    font-size: 10.2pt;
+    line-height: 1.42;
+    text-align: justify;
+    text-justify: inter-word;
+    margin: 0 0 7px 0;
+    color: #1A1A1A;
+}
+ul, ol {
+    margin: 3px 0 7px 18px;
+    padding: 0;
+}
+li {
+    font-size: 10pt;
+    line-height: 1.38;
+    margin-bottom: 3.5px;
+    text-align: justify;
+}
+
+/* Tables */
+table.report-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 7px 0 4px 0;
+    font-size: 9pt;
+}
+table.report-table th, table.report-table td {
+    border: 1px solid #333333;
+    padding: 4.5px 7px;
+    text-align: left;
+    vertical-align: top;
+}
+table.report-table th {
+    background-color: #EAECEE;
+    font-weight: bold;
+    color: #111111;
+}
+.table-caption {
+    font-size: 9pt;
+    font-style: italic;
+    text-align: center;
+    margin: 3px 0 8px 0;
+    color: #2C3E50;
+}
+
+/* Figures */
+.fig-container {
+    text-align: center;
+    margin: 6px 0 3px 0;
+}
+.fig-container img {
+    max-width: 96%;
+    height: auto;
+    border: 1px solid #D5D8DC;
+    border-radius: 3px;
+}
+.fig-caption {
+    font-size: 9pt;
+    font-style: italic;
+    text-align: center;
+    margin: 4px 0 8px 0;
+    color: #2C3E50;
+}
+
+/* Page Numbers */
+.page-number {
+    position: absolute;
+    bottom: 6mm;
+    right: 8mm;
+    font-size: 10.5pt;
+    font-family: 'Times New Roman', serif;
+    color: #111111;
+}
+
+/* Specific Page Formats */
+.center-text {
+    text-align: center;
+}
+.bold {
+    font-weight: bold;
+}
+.maroon-text {
+    color: #922B21;
+}
+.blue-text {
+    color: #1F618D;
+}
+.code-block {
+    background: #F8F9F9;
+    border: 1px solid #D5DBDB;
+    padding: 7px 10px;
+    font-family: 'Courier New', monospace;
+    font-size: 8pt;
+    line-height: 1.25;
+    white-space: pre-wrap;
+    border-radius: 3px;
+    margin: 5px 0 8px 0;
+}
+</style>
+</head>
+<body>
+
+<!-- ========================================================================= -->
+<!-- COVER PAGE (Page 1 in PDF, Unnumbered)                                    -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div class="border-outer">
+    <div class="border-inner" style="justify-content: space-between; align-items: center; padding: 14mm 12mm;">
+      
+      <div style="text-align: center; width: 100%;">
+        <div style="font-size: 13.5pt; font-weight: bold; letter-spacing: 0.5px;">VISVESVARAYA TECHNOLOGICAL UNIVERSITY</div>
+        <div style="font-size: 11pt; margin-top: 3px; font-weight: 500;">Jnana Sangama, Belagavi-590018</div>
+      </div>
+
+      <div style="text-align: center; margin: 12px 0;">
+        <img src="{{VTU_LOGO}}" style="width: 105px; height: auto;" alt="VTU Logo">
+      </div>
+
+      <div style="text-align: center; width: 100%;">
+        <div style="font-size: 12pt; color: #1B4F72; font-weight: 500;">Data Engineering and MLOps Project Report on</div>
+        <h1 class="report-title" style="margin: 8px 0 10px 0; font-size: 14pt;">“HOSPITAL READMISSION ANALYTICS AND 30-DAY PREDICTION”</h1>
+        <div style="font-size: 10.5pt; font-style: italic; margin-top: 4px;">Submitted in Partial fulfilment of the Requirements for the Degree of</div>
+        <div style="font-size: 10.5pt; font-weight: bold; margin-top: 2px;">Bachelor of Engineering in Computer Science and Engineering (Artificial Intelligence & Machine Learning)</div>
+      </div>
+
+      <div style="text-align: center; width: 100%; margin: 8px 0;">
+        <div style="font-size: 10.5pt; font-weight: 500;">By</div>
+        <div style="font-size: 11.5pt; font-weight: bold; margin-top: 2px;">V. KEERTHANA (1CR23CI059)</div>
+      </div>
+
+      <div style="text-align: center; width: 100%;">
+        <div style="font-size: 10pt; font-style: italic; color: #1B4F72;">Under the Guidance of,</div>
+        <div style="font-size: 11pt; font-weight: bold; color: #1B4F72;">Ms Swastisudha Punyatoya</div>
+        <div style="font-size: 10pt; font-weight: bold; color: #1B4F72;">Assistant Professor, Dept. of AIML</div>
+      </div>
+
+      <div style="text-align: center; margin: 6px 0;">
+        <img src="{{CMRIT_LOGO}}" style="width: 170px; height: auto;" alt="CMRIT Logo">
+      </div>
+
+      <div style="text-align: center; width: 100%; border-top: 1px solid #BDC3C7; padding-top: 8px;">
+        <div style="font-size: 9.5pt; font-weight: bold; color: #922B21; letter-spacing: 0.3px;">DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING (AI & ML)</div>
+        <div style="font-size: 13.5pt; font-weight: bold; margin-top: 3px;">CMR INSTITUTE OF TECHNOLOGY</div>
+        <div style="font-size: 8.5pt; margin-top: 2px; color: #333;">Affiliated to VTU, Approved by AICTE, Accredited by NBA and NAAC with “A++” Grade</div>
+        <div style="font-size: 8.5pt; margin-top: 1px; color: #333;">ITPL MAIN ROAD, BROOKFIELD, BENGALURU-560037, KARNATAKA, INDIA</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 2: CERTIFICATE (Numbered 1)                                          -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div class="border-outer">
+    <div class="border-inner" style="justify-content: space-between;">
+      
+      <div>
+        <div style="text-align: center;">
+          <div style="font-size: 14pt; font-weight: bold;">CMR INSTITUTE OF TECHNOLOGY</div>
+          <div style="font-size: 8.5pt; color: #333; margin-top: 2px;">Affiliated to VTU, Approved by AICTE, Accredited by NBA and NAAC with “A++” Grade</div>
+          <div style="font-size: 8.5pt; color: #333;">ITPL MAIN ROAD, BROOKFIELD, BENGALURU-560037, KARNATAKA, INDIA</div>
+          <div style="font-size: 9.5pt; font-weight: bold; color: #922B21; margin-top: 4px;">DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING (AI & ML)</div>
+        </div>
+
+        <div style="text-align: center; margin: 16px 0 10px 0;">
+          <img src="{{CMRIT_LOGO}}" style="width: 140px; height: auto;" alt="CMRIT Logo">
+        </div>
+
+        <h2 class="chapter-title" style="margin-top: 10px;">CERTIFICATE</h2>
+
+        <p style="text-indent: 25px; line-height: 1.6; font-size: 10.5pt;">
+          This is to certify that the Data Engineering and MLOps Project report work entitled 
+          <strong>“Hospital Readmission Analytics and 30-Day Prediction”</strong> has been carried out by 
+          <strong>V. KEERTHANA (1CR23CI059)</strong>, Bonafide student of CMR Institute of Technology, Bengaluru in partial fulfilment for the award of the Degree of 
+          <strong>Bachelor of Engineering in Computer Science and Engineering (Artificial Intelligence and Machine Learning)</strong> of the Visvesvaraya Technological University, Belagavi during the year 
+          <strong>2026-2027</strong>. It is certified that all corrections/suggestions indicated for the Internal Assessment have been incorporated in the report deposited in the departmental library. This Data Engineering and MLOps Project report has been approved as it satisfies the academic requirements in respect of Project work prescribed for the said Degree.
+        </p>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; margin-top: 50px; padding: 0 15px;">
+        <div style="text-align: center; width: 45%;">
+          <div style="border-top: 1.5px solid #000; width: 100%; margin-bottom: 6px;"></div>
+          <div style="font-weight: bold; font-size: 10.5pt;">Signature of</div>
+          <div style="font-weight: bold; font-size: 10.5pt;">Ms. Swastisudha Punyatoya</div>
+          <div style="font-size: 10pt; font-weight: 500;">Project Guide</div>
+          <div style="font-size: 9.5pt;">Dept. of AI&ML</div>
+          <div style="font-size: 9.5pt;">CMR Institute of Technology</div>
+        </div>
+
+        <div style="text-align: center; width: 45%;">
+          <div style="border-top: 1.5px solid #000; width: 100%; margin-bottom: 6px;"></div>
+          <div style="font-weight: bold; font-size: 10.5pt;">Signature of</div>
+          <div style="font-weight: bold; font-size: 10.5pt;">Dr. Rajalakshmi B</div>
+          <div style="font-size: 10pt; font-weight: 500;">Head of Department</div>
+          <div style="font-size: 9.5pt;">Dept. of AI&ML</div>
+          <div style="font-size: 9.5pt;">CMR Institute of Technology</div>
+        </div>
+      </div>
+
+      <div class="page-number">1</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 3: DECLARATION (Numbered 2)                                          -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div class="border-outer">
+    <div class="border-inner" style="justify-content: space-between;">
+      
+      <div>
+        <h2 class="chapter-title" style="margin-top: 12px;">DECLARATION</h2>
+
+        <p style="text-indent: 25px; line-height: 1.55; font-size: 10.5pt; margin-top: 18px;">
+          I, Ms. <strong>V. KEERTHANA (1CR23CI059)</strong>, hereby declare that the Data Engineering and MLOps Project report entitled 
+          <strong>“Hospital Readmission Analytics and 30-Day Prediction”</strong> has been carried out by me as an individual academic project under the guidance of 
+          <strong>Ms. Swastisudha Punyatoya</strong>, Assistant Professor, Department of AI&ML, CMR Institute of Technology, Bengaluru, in partial fulfilment of the requirement for the degree of 
+          <strong>BACHELOR OF ENGINEERING IN COMPUTER SCIENCE AND ENGINEERING (ARTIFICIAL INTELLIGENCE AND MACHINE LEARNING)</strong>, of Visvesvaraya Technological University, Belagavi during the academic year <strong>2026-2027</strong>.
+        </p>
+
+        <p style="text-indent: 25px; line-height: 1.55; font-size: 10.5pt; margin-top: 14px;">
+          The project involves data ingestion, privacy-preserving data cleaning and transformation, surrogate patient key de-identification, dimensional data warehouse design in PostgreSQL, clinical readmission analytics, interactive dashboard development in Streamlit, and an end-to-end production machine learning pipeline for 30-day hospital readmission prediction with MLflow tracking and FastAPI serving.
+        </p>
+
+        <p style="text-indent: 25px; line-height: 1.55; font-size: 10.5pt; margin-top: 14px;">
+          This report has been prepared for academic submission, and the sources, datasets, tools, and references used in the project have been acknowledged appropriately. The work done in this Data Engineering and MLOps Project report is original and it has not been submitted for any other degree in any university.
+        </p>
+      </div>
+
+      <div style="margin-top: 60px;">
+        <div style="float: left; font-size: 10.5pt; line-height: 1.5;">
+          <strong>Place:</strong> Bengaluru<br>
+          <strong>Date:</strong> 13/10/2026
+        </div>
+        <div style="float: right; text-align: right; font-size: 10.5pt; margin-top: 25px;">
+          <strong>V. Keerthana (1CR23CI059)</strong>
+        </div>
+        <div style="clear: both;"></div>
+      </div>
+
+      <div class="page-number">2</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 4: ABSTRACT (Numbered 3)                                             -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div class="border-outer">
+    <div class="border-inner">
+      
+      <h2 class="chapter-title" style="margin-top: 10px;">ABSTRACT</h2>
+
+      <p style="text-indent: 25px;">
+        Hospital readmissions within 30 days of inpatient discharge impose substantial clinical vulnerabilities on patients and trigger severe financial penalties for healthcare systems under the Hospital Readmissions Reduction Program (HRRP) administered by the Centers for Medicare & Medicaid Services (CMS). However, raw Electronic Health Record (EHR) and clinical encounter data are characterized by high-dimensional complexity, non-standardized missing tokens, class imbalance, and strict patient privacy regulations. This project, titled <strong>“Hospital Readmission Analytics and 30-Day Prediction,”</strong> implements an end-to-end, privacy-preserving data engineering and production MLOps pipeline designed to ingest, process, warehouse, analyze, predict, and govern 30-day hospital readmissions.
+      </p>
+
+      <p style="text-indent: 25px;">
+        The system utilizes the retrospective UCI Diabetes 130-US Hospitals dataset, representing 101,766 inpatient encounters across 130 medical centers over a 10-year period with 50 clinical and demographic attributes. A Python-based automated extraction and transformation pipeline performs missing-value harmonization, clinical ICD-9 diagnosis grouping into 8 disease categories, clinical feature aggregation, and cryptographic surrogate key de-identification using SHA-256 hashing to enforce HIPAA-grade privacy. An automated data quality validation gate enforces four integrity constraints, staging verified records into a PostgreSQL dimensional data warehouse comprising fact and summary tables while isolating anomalies in an operational error quarantine.
+      </p>
+
+      <p style="text-indent: 25px;">
+        An interactive clinical analytics platform built with Streamlit visualizes executive healthcare metrics, readmission correlations across demographic brackets, and high-risk patient cohorts. The MLOps pipeline extension models 30-day readmission as a cost-sensitive binary classification task to mitigate the acute 1:8 class imbalance (11.16% readmission rate). Three machine learning architectures—Logistic Regression with balanced weighting, Random Forest with balanced subsampling, and XGBoost with positive class weighting—are benchmarked with MLflow experiment tracking. XGBoost is established as the champion model with an ROC-AUC of 0.6815 and a recall of 60.55%, successfully passing an automated operational deployment gate.
+      </p>
+
+      <p style="text-indent: 25px;">
+        The champion pipeline is serialized and served through a low-latency FastAPI REST service offering real-time bedside risk scoring, probability gauge estimation, and targeted clinical intervention recommendations, packaged via Docker for reproducible deployment. Continuous governance is maintained through statistical drift monitoring using Kolmogorov-Smirnov tests and Population Stability Index (PSI). The integrated workflow bridges robust data engineering with responsible healthcare machine learning to deliver clinical decision support.
+      </p>
+
+      <div class="page-number">3</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 5: ACKNOWLEDGEMENT (Numbered 4)                                      -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div class="border-outer">
+    <div class="border-inner">
+      
+      <h2 class="chapter-title" style="margin-top: 10px;">ACKNOWLEDGEMENT</h2>
+
+      <p style="text-indent: 25px;">
+        I take this opportunity to express my sincere gratitude and respect to <strong>CMR Institute of Technology, Bengaluru</strong> for providing me with the opportunity to undertake the project titled <strong>“Hospital Readmission Analytics and 30-Day Prediction”</strong> as part of the Data Engineering and MLOps course.
+      </p>
+
+      <p style="text-indent: 25px;">
+        It gives me immense pleasure to express my deep sense of gratitude to <strong>Dr. Sanjay Jain</strong>, Principal, CMRIT, Bengaluru, for his constant encouragement and for providing the academic infrastructure necessary to accomplish this work.
+      </p>
+
+      <p style="text-indent: 25px;">
+        I would like to extend my sincere gratitude to <strong>Dr. Rajalakshmi B</strong>, Head of Department, Department of Artificial Intelligence and Machine Learning, CMRIT, Bengaluru, for her guidance, constant support, and academic encouragement throughout the course of this project.
+      </p>
+
+      <p style="text-indent: 25px;">
+        I would like to express my heartfelt thanks to my guide <strong>Ms. Swastisudha Punyatoya</strong>, Assistant Professor, Department of AIML, for her valuable guidance, constructive technical critiques, and continuous feedback throughout every stage of this project work.
+      </p>
+
+      <p style="text-indent: 25px;">
+        I thank all the faculty members of the Department of Computer Science and Engineering (Artificial Intelligence and Machine Learning) for their academic support, technical recommendations, and encouragement throughout the semester.
+      </p>
+
+      <p style="text-indent: 25px;">
+        I also gratefully acknowledge the creators of the UCI Diabetes 130-US Hospitals dataset (Beata Strack et al.) and the developers of the open-source software libraries and frameworks utilized in this project, including Python, Pandas, PostgreSQL, Apache Airflow, Streamlit, Scikit-learn, XGBoost, MLflow, FastAPI, and Docker.
+      </p>
+
+      <p style="text-indent: 25px;">
+        This project has provided me with invaluable practical experience in production data engineering, relational database warehousing, clinical feature engineering, machine learning lifecycle management, and containerized model serving. Finally, I thank my family and peers who supported me during the completion of this work.
+      </p>
+
+      <div class="page-number">4</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 6: GROUP MEMBERS LIST (Numbered 5)                                   -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div class="border-outer">
+    <div class="border-inner">
+      
+      <h2 class="chapter-title" style="margin-top: 15px;">GROUP MEMBERS LIST</h2>
+
+      <table class="report-table" style="margin-top: 25px;">
+        <thead>
+          <tr>
+            <th style="width: 15%; text-align: center;">S. NO.</th>
+            <th style="width: 55%;">NAME OF STUDENT</th>
+            <th style="width: 30%; text-align: center;">USN</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="text-align: center; font-weight: bold;">01</td>
+            <td style="font-weight: bold;">V. Keerthana</td>
+            <td style="text-align: center; font-weight: bold;">1CR23CI059</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="margin-top: 25px; font-size: 11pt; font-weight: bold; color: #1B4F72;">
+        Project Mode: Individual Project
+      </div>
+
+      <div style="margin-top: 30px; border-left: 3px solid #1B4F72; padding-left: 14px; font-size: 10.5pt; line-height: 1.6; color: #333;">
+        <strong>Academic Program:</strong> Bachelor of Engineering (B.E.)<br>
+        <strong>Department:</strong> Department of Computer Science and Engineering (Artificial Intelligence & Machine Learning)<br>
+        <strong>Institution:</strong> CMR Institute of Technology, Bengaluru<br>
+        <strong>Affiliating University:</strong> Visvesvaraya Technological University (VTU), Belagavi<br>
+        <strong>Academic Year:</strong> 2026–2027
+      </div>
+
+      <div class="page-number">5</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 7: TABLE OF CONTENTS (Numbered 6)                                    -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div class="border-outer">
+    <div class="border-inner">
+      
+      <h2 class="chapter-title" style="margin-top: 8px;">TABLE OF CONTENTS</h2>
+
+      <table class="report-table" style="font-size: 8.8pt;">
+        <thead>
+          <tr>
+            <th style="width: 12%; text-align: center;">S. No.</th>
+            <th style="width: 73%;">Contents</th>
+            <th style="width: 15%; text-align: center;">Page No.</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style="text-align: center;">1</td><td>Certificate</td><td style="text-align: center;">1</td></tr>
+          <tr><td style="text-align: center;">2</td><td>Declaration</td><td style="text-align: center;">2</td></tr>
+          <tr><td style="text-align: center;">3</td><td>Abstract</td><td style="text-align: center;">3</td></tr>
+          <tr><td style="text-align: center;">4</td><td>Acknowledgement</td><td style="text-align: center;">4</td></tr>
+          <tr><td style="text-align: center;">5</td><td>Group Members List</td><td style="text-align: center;">5</td></tr>
+          <tr><td style="text-align: center;">6</td><td>Table of Contents</td><td style="text-align: center;">6</td></tr>
+          <tr><td style="text-align: center;">7</td><td><strong>1. Introduction</strong></td><td style="text-align: center;"><strong>7</strong></td></tr>
+          <tr><td style="text-align: center;">8</td><td><strong>2. Problem Statement and Objectives</strong></td><td style="text-align: center;"><strong>9</strong></td></tr>
+          <tr><td style="text-align: center;">9</td><td><strong>3. Data Source and Dataset Description</strong></td><td style="text-align: center;"><strong>10</strong></td></tr>
+          <tr><td style="text-align: center;">10</td><td><strong>4. System and Data Architecture</strong></td><td style="text-align: center;"><strong>12</strong></td></tr>
+          <tr><td style="text-align: center;">11</td><td><strong>5. Data Ingestion and ETL Pipeline</strong></td><td style="text-align: center;"><strong>14</strong></td></tr>
+          <tr><td style="text-align: center;">12</td><td><strong>6. Database Design and Data Quality</strong></td><td style="text-align: center;"><strong>16</strong></td></tr>
+          <tr><td style="text-align: center;">13</td><td><strong>7. Data Visualization and Analytics</strong></td><td style="text-align: center;"><strong>18</strong></td></tr>
+          <tr><td style="text-align: center;">14</td><td><strong>8. MLOps Pipeline Extension</strong></td><td style="text-align: center;"><strong>20</strong></td></tr>
+          <tr><td style="text-align: center;">15</td><td><strong>9. Results and Discussion</strong></td><td style="text-align: center;"><strong>24</strong></td></tr>
+          <tr><td style="text-align: center;">16</td><td><strong>10. Conclusion and Future Scope</strong></td><td style="text-align: center;"><strong>28</strong></td></tr>
+          <tr><td style="text-align: center;">17</td><td><strong>References</strong></td><td style="text-align: center;"><strong>30</strong></td></tr>
+          <tr><td style="text-align: center;">18</td><td><strong>Appendices</strong></td><td style="text-align: center;"><strong>31</strong></td></tr>
+          <tr><td style="text-align: center;">19</td><td>Appendix A – Project Directory Structure</td><td style="text-align: center;">31</td></tr>
+          <tr><td style="text-align: center;">20</td><td>Appendix B – Sample API Input</td><td style="text-align: center;">31</td></tr>
+          <tr><td style="text-align: center;">21</td><td>Appendix C – Sample Prediction Output</td><td style="text-align: center;">31</td></tr>
+        </tbody>
+      </table>
+
+      <div class="page-number">6</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 8: 1. INTRODUCTION (Numbered 7)                                      -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div class="border-outer">
+    <div class="border-inner">
+      
+      <h2 class="chapter-title" style="margin-top: 6px;">1. INTRODUCTION</h2>
+
+      <h3 class="section-title">1.1 Background</h3>
+      <p>
+        The modernization of healthcare infrastructure and the widespread adoption of Electronic Health Record (EHR) systems have produced extensive repositories of clinical, demographic, and administrative transaction data. Hospital encounters record crucial information regarding patient admission pathways, length of stay, laboratory diagnostic intensity, surgical and therapeutic procedures, pharmacotherapy regimens, and post-discharge outcomes.
+      </p>
+      <p>
+        Among clinical quality measures, 30-day all-cause hospital readmission serves as a paramount benchmark of healthcare quality, transition-of-care effectiveness, and patient safety. Under the <strong>Hospital Readmissions Reduction Program (HRRP)</strong> established by the Centers for Medicare & Medicaid Services (CMS), medical centers with readmission rates exceeding national thresholds face severe financial penalties alongside compromised clinical reputations. Identifying patients at elevated risk of rapid readmission prior to discharge enables healthcare institutions to proactively implement targeted clinical transition bundles, such as multidisciplinary discharge medication reconciliation, 48-hour follow-up telephone triage, and expedited outpatient clinic scheduling.
+      </p>
+      <p>
+        However, the practical utility of clinical datasets depends on data engineering rigour and governance. Retrospective clinical records routinely exhibit missing tokens, duplicate observations, severe class imbalances (where readmission occurs in only a small minority of encounters), and stringent regulatory constraints regarding Protected Health Information (PHI). Data engineering provides the structured methodology to ingest, normalize, de-identify, validate, and warehouse clinical data. Machine learning and MLOps build upon this foundation to automate predictive risk scoring, enforce quality gates, and monitor model performance over time.
+      </p>
+
+      <h3 class="section-title">1.2 Project Overview</h3>
+      <p>
+        The project, <strong>Hospital Readmission Analytics and 30-Day Prediction</strong>, is an individual implementation of an end-to-end data engineering and production MLOps workflow utilizing the UCI Diabetes 130-US Hospitals dataset. The system integrates two foundational pillars:
+      </p>
+
+      <div style="font-weight: bold; font-size: 10pt; margin: 5px 0 2px 0; color: #1B4F72;">Part 1: Healthcare Analytics and Data Engineering</div>
+      <ul>
+        <li>Programmatically ingest 101,766 inpatient encounters from the UCI repository.</li>
+        <li>Clean and harmonize missing value representations using Python and Pandas.</li>
+        <li>Enforce HIPAA-grade privacy preservation by replacing medical identifiers with SHA-256 cryptographic surrogate keys.</li>
+        <li>Map thousands of granular ICD-9 codes into 8 meaningful clinical diagnosis categories.</li>
+        <li>Enforce four automated data quality rules and isolate anomalies in a rejected records audit table.</li>
+        <li>Design and populate a PostgreSQL analytical dimensional warehouse (`mart.admission_fact`).</li>
+        <li>Construct specialized analytical data marts for patient histories and diagnosis aggregations.</li>
+        <li>Develop an interactive clinical business intelligence dashboard using Streamlit.</li>
+      </ul>
+
+      <div style="font-weight: bold; font-size: 10pt; margin: 5px 0 2px 0; color: #1B4F72;">Part 2: Hospital Readmission Prediction and MLOps</div>
+      <ul>
+        <li>Engineer clinical features and strictly eliminate target leakage and surrogate keys.</li>
+        <li>Mitigate the 1:8 class imbalance (11.16% readmission rate) through cost-sensitive learning.</li>
+        <li>Train and benchmark Logistic Regression, Random Forest, and XGBoost classifiers.</li>
+        <li>Instrument training with MLflow experiment tracking and register the champion model.</li>
+        <li>Enforce an automated operational validation gate (ROC-AUC ≥ 0.60, Recall ≥ 40%).</li>
+        <li>Deploy the champion model via a real-time FastAPI REST endpoint (`POST /predict`).</li>
+        <li>Monitor post-deployment feature drift using Kolmogorov-Smirnov tests and PSI.</li>
+        <li>Orchestrate the unified end-to-end pipeline through Apache Airflow.</li>
+      </ul>
+
+      <div class="page-number">7</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 9: 1.3 SCOPE OF THE PROJECT (Numbered 8)                             -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div class="border-outer">
+    <div class="border-inner">
+      
+      <h3 class="section-title" style="margin-top: 10px;">1.3 Scope of the Project</h3>
+      <p>
+        The scope of this project encompasses the design, implementation, and evaluation of a complete, automated healthcare data processing and machine learning lifecycle. The project spans:
+      </p>
+      <ul>
+        <li><strong>Data Ingestion & Preservation:</strong> Programmatic extraction of public clinical records, creation of an immutable raw data lake, and recording of extraction metadata to guarantee auditability and 100% reproducibility.</li>
+        <li><strong>Privacy Engineering & Governance:</strong> De-identification of patient records in accordance with HIPAA safe-harbour standards by permanently purging raw medical record numbers and establishing non-reversible SHA-256 surrogate hashes (`patient_key`).</li>
+        <li><strong>Data Quality Validation:</strong> Automated pre-load validation to trap null primary keys, out-of-range lengths of stay, and invalid target classes, redirecting erroneous rows into a dedicated quarantine store.</li>
+        <li><strong>Relational & Dimensional Storage:</strong> Design of a PostgreSQL dimensional warehouse comprising staging tables, an encounter fact table (`mart.admission_fact`), aggregated data marts, and pipeline execution logging tables (`ops.pipeline_run`).</li>
+        <li><strong>Clinical BI & Dashboarding:</strong> Construction of an interactive Streamlit platform delivering demographic distributions, clinical diagnosis breakdowns, length-of-stay correlations, and high-risk patient cohort exploration.</li>
+        <li><strong>Leakage-Free Feature Engineering:</strong> Extraction of clinically relevant predictors (polypharmacy load, hospital utilization history, lab procedure intensity) with strict exclusion of retrospective or target-derived columns.</li>
+        <li><strong>Class-Weighted Model Benchmarking:</strong> Comparative evaluation of linear and tree-based ensemble architectures (Logistic Regression, Random Forest, XGBoost) specifically configured with class weighting to counteract the severe 1:8 class imbalance.</li>
+        <li><strong>MLOps Lifecycle & Serving:</strong> Experiment tracking with MLflow, automated operational promotion gates, containerized microservice serving via FastAPI, bedside risk stratification, and statistical distribution drift monitoring.</li>
+      </ul>
+
+      <p style="margin-top: 14px;">
+        <strong>Academic Prototype Context:</strong> The project demonstrates how modern data engineering, business intelligence, and MLOps principles converge in the healthcare domain. It is implemented as an advanced academic research prototype and does not claim to replace clinical judgment in direct patient care. Real-world clinical efficacy depends on comprehensive clinical trials, integration with electronic medical record systems, prospective cohort validation, and human-in-the-loop clinical supervision.
+      </p>
+
+      <div class="page-number">8</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 10: 2. PROBLEM STATEMENT AND OBJECTIVES (Numbered 9)                 -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div class="border-outer">
+    <div class="border-inner">
+      
+      <h2 class="chapter-title" style="margin-top: 6px;">2. PROBLEM STATEMENT AND OBJECTIVES</h2>
+
+      <h3 class="section-title">2.1 Problem Statement</h3>
+      <p>
+        Clinical datasets derived from hospital encounters contain valuable information regarding patient demographics, admission pathways, clinical diagnoses, length of stay, procedure counts, and pharmacotherapy regimens. However, direct analytical exploitation of raw clinical data presents significant technical and operational hurdles:
+      </p>
+      <ul>
+        <li><strong>Data Inconsistency and Quality Deficits:</strong> Raw hospital datasets frequently contain inconsistent missing value tokens, duplicate entries, and out-of-bounds metrics that distort analytical totals and downstream predictions.</li>
+        <li><strong>Patient Privacy and De-Identification:</strong> Healthcare analytics must adhere to strict regulatory privacy mandates (such as HIPAA). Analyzing direct patient identifiers exposes institutions to severe legal vulnerabilities.</li>
+        <li><strong>Target Leakage and Artificial Accuracy:</strong> Retrospective datasets often contain discharge or outcome fields that artificially leak the target class, causing machine learning models to appear accurate in training while failing completely in live deployment.</li>
+        <li><strong>Acute Class Imbalance:</strong> 30-day hospital readmissions represent a minority clinical event (typically 10%–15%). Standard machine learning models trained on imbalanced data optimize overall accuracy by predicting zero readmissions for 100% of cases, missing every deteriorating patient.</li>
+        <li><strong>Lack of Operational Lifecycle Governance:</strong> Data pipelines and machine learning models are often executed as isolated scripts without centralized orchestration, experiment tracking, validation gates, or drift detection.</li>
+      </ul>
+      <p>
+        The problem addressed by this project is the engineering of an integrated, automated, and privacy-preserving system that extracts raw hospital encounter records, validates and warehouses them in a PostgreSQL data mart, delivers clinical insights via an interactive dashboard, and implements a governed MLOps pipeline for 30-day hospital readmission risk prediction.
+      </p>
+
+      <h3 class="section-title">2.2 Objectives</h3>
+      <p>The primary technical and clinical objectives of the project are:</p>
+      <ul>
+        <li>To extract 101,766 hospital encounter records from the UCI Diabetes 130-US Hospitals dataset.</li>
+        <li>To standardize missing tokens, normalize schema representations, and group ICD-9 diagnosis codes.</li>
+        <li>To enforce HIPAA-compliant de-identification by generating SHA-256 cryptographic surrogate patient keys.</li>
+        <li>To implement an automated data quality gate that routes invalid records to an error quarantine.</li>
+        <li>To design and populate a PostgreSQL dimensional data warehouse with fact and summary marts.</li>
+        <li>To build an interactive clinical analytics dashboard in Streamlit for population health exploration.</li>
+        <li>To engineer clinical predictors while strictly eliminating target leakage and surrogate identifiers.</li>
+        <li>To train and benchmark Logistic Regression, Random Forest, and XGBoost using class-weighted cost functions.</li>
+        <li>To track machine learning experiments, log parameters and evaluation artifacts, and register models with MLflow.</li>
+        <li>To enforce an automated operational validation gate asserting minimum clinical discrimination and recall.</li>
+        <li>To deploy the champion model as a real-time REST endpoint using FastAPI with Docker containerization.</li>
+        <li>To establish post-deployment statistical drift monitoring using Kolmogorov-Smirnov and PSI metrics.</li>
+      </ul>
+
+      <div class="page-number">9</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 11: 3. DATA SOURCE AND DATASET DESCRIPTION (Numbered 10)             -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div class="border-outer">
+    <div class="border-inner">
+      
+      <h2 class="chapter-title" style="margin-top: 6px;">3. DATA SOURCE AND DATASET DESCRIPTION</h2>
+
+      <h3 class="section-title">3.1 Selected Dataset</h3>
+      <p>
+        The project utilizes the <strong>Diabetes 130-US Hospitals for Years 1999–2008</strong> dataset, made publicly available through the UCI Machine Learning Repository (Dataset ID: 296, DOI: 10.24432/C5230J). The dataset was compiled by Beata Strack et al. and represents ten years of clinical encounters from 130 participating medical centers throughout the United States.
+      </p>
+      <p>
+        The dataset contains 101,766 inpatient encounters associated with 71,518 unique patients diagnosed with diabetes. Each record represents an inpatient hospital admission lasting between 1 and 14 days where laboratory tests were administered and medications were prescribed. The dataset contains 50 distinct attributes capturing patient demographics, hospital admission specifics, clinical utilization, diagnostics, glycemic lab measurements, and diabetic medication management.
+      </p>
+      <p>
+        This dataset is ideally suited for this project because it provides authentic, multi-hospital retrospective records that support dimensional schema modeling, clinical feature engineering, privacy preservation workflows, and binary readmission classification.
+      </p>
+
+      <h3 class="section-title">3.2 Dataset Characteristics</h3>
+      <p>The core characteristics and metadata of the selected dataset are summarized in Table 1.</p>
+
+      <table class="report-table">
+        <thead>
+          <tr>
+            <th style="width: 35%;">Characteristic</th>
+            <th style="width: 65%;">Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Dataset Name</td><td>Diabetes 130-US Hospitals for Years 1999–2008</td></tr>
+          <tr><td>Source Repository</td><td>UCI Machine Learning Repository (ID: 296)</td></tr>
+          <tr><td>Total Record Count</td><td>101,766 hospital encounters</td></tr>
+          <tr><td>Distinct Patients</td><td>71,518 unique individuals</td></tr>
+          <tr><td>Number of Attributes</td><td>50 source features</td></tr>
+          <tr><td>Data Modality</td><td>Tabular Electronic Health Record (EHR) encounter data</td></tr>
+          <tr><td>Timeframe Covered</td><td>1999 to 2008 (10-year multi-center cohort)</td></tr>
+          <tr><td>Target Variable</td><td>`readmitted` (`<30`, `>30`, `NO`) -> Binary: `readmitted_within_30_days`</td></tr>
+          <tr><td>File Path in Project</td><td>`data/raw/diabetic_data.csv`</td></tr>
+          <tr><td>Mapping Reference</td><td>`data/raw/IDS_mapping.csv`</td></tr>
+        </tbody>
+      </table>
+      <div class="table-caption">Table 1. Characteristics of the Hospital Readmission dataset</div>
+
+      <h3 class="section-title">3.3 Data Acquisition</h3>
+      <p>
+        Data acquisition is automated via a programmatic extraction module (`src/ingestion/ingest.py`). The script queries the UCI repository using the official `ucimlrepo` library. If network access is restricted, the module automatically falls back to the verified local archive.
+      </p>
+      <p>
+        The raw dataset is stored in an immutable raw layer (`data/raw/diabetic_data.csv`). An ingestion metadata file (`data/staging/ingestion_metadata.json`) records extraction timestamps, source URLs, byte sizes, and exact row counts. Maintaining the raw layer in an unaltered state guarantees complete data lineage, auditability, and reproducibility throughout subsequent transformations.
+      </p>
+
+      <div class="page-number">10</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 12: 3.4 DATA DICTIONARY (Numbered 11)                                -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div class="border-outer">
+    <div class="border-inner">
+      
+      <h3 class="section-title" style="margin-top: 6px;">3.4 Data Dictionary</h3>
+      <p>
+        Table 2 outlines the primary attributes utilized across the data engineering and machine learning layers of the project, including descriptions and storage data types.
+      </p>
+
+      <table class="report-table" style="font-size: 8.5pt;">
+        <thead>
+          <tr>
+            <th style="width: 25%;">Attribute</th>
+            <th style="width: 55%;">Description & Clinical Context</th>
+            <th style="width: 20%;">Data Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>encounter_id</td><td>Unique identification number for the specific hospital admission</td><td>BigInt / Primary Key</td></tr>
+          <tr><td>patient_key</td><td>SHA-256 cryptographic surrogate hash derived from medical record number</td><td>String (Hex Hash)</td></tr>
+          <tr><td>age</td><td>10-year bracket of patient age e.g., `[70-80)`</td><td>String (Categorical)</td></tr>
+          <tr><td>gender</td><td>Patient administrative gender (Female, Male)</td><td>String (Categorical)</td></tr>
+          <tr><td>admission_type_id</td><td>Admission route code: 1=Emergency, 2=Urgent, 3=Elective</td><td>Integer (Foreign Key)</td></tr>
+          <tr><td>discharge_disposition_id</td><td>Discharge status: 1=Home, 3=SNF, 6=Home Health</td><td>Integer (Foreign Key)</td></tr>
+          <tr><td>time_in_hospital</td><td>Length of inpatient hospital stay in days (1 to 14)</td><td>Integer</td></tr>
+          <tr><td>num_lab_procedures</td><td>Total distinct laboratory tests performed during admission</td><td>Integer</td></tr>
+          <tr><td>num_procedures</td><td>Total surgical or therapeutic non-lab procedures performed</td><td>Integer</td></tr>
+          <tr><td>num_medications</td><td>Total distinct medications administered during encounter</td><td>Integer</td></tr>
+          <tr><td>number_inpatient</td><td>Number of inpatient hospital admissions in preceding 12 months</td><td>Integer</td></tr>
+          <tr><td>prior_admission_count</td><td>Aggregated sum of preceding emergency, inpatient, and outpatient visits</td><td>Integer (Engineered)</td></tr>
+          <tr><td>diagnosis_group</td><td>Primary clinical diagnosis mapped from ICD-9 (`diag_1`) into 8 families</td><td>String (Categorical)</td></tr>
+          <tr><td>readmitted</td><td>Source readmission outcome: `<30` days, `>30` days, or `NO`</td><td>String (Categorical)</td></tr>
+          <tr><td>readmitted_within_30_days</td><td>Binary target indicator: 1 if readmitted <30 days, else 0</td><td>SmallInt / Binary</td></tr>
+        </tbody>
+      </table>
+      <div class="table-caption">Table 2. Data dictionary of key Hospital Readmission attributes</div>
+
+      <h4 class="sub-title">Dataset Usage and Privacy Engineering</h4>
+      <p>
+        The attribute `encounter_id` serves as the primary key for the admission fact table, ensuring that each hospitalization is uniquely identifiable. The raw medical record identifier (`patient_nbr`) was permanently expunged during transformation and replaced with `patient_key`, an irreversible 16-character SHA-256 cryptographic surrogate hash (`SHA-256("patient:" + patient_nbr)[:16]`). This enforces HIPAA de-identification while preserving relational aggregation capabilities across multi-visit patients.
+      </p>
+      <p>
+        Clinical utilization metrics (`num_lab_procedures`, `num_medications`, `time_in_hospital`, and `prior_admission_count`) quantify patient acuity and polypharmacy load. To prevent target leakage, all retrospective indicators and identifier hashes are strictly removed from feature matrices prior to model training.
+      </p>
+
+      <div class="page-number">11</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 13: 4. SYSTEM AND DATA ARCHITECTURE (Numbered 12)                    -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div class="border-outer">
+    <div class="border-inner">
+      
+      <h2 class="chapter-title" style="margin-top: 6px;">4. SYSTEM AND DATA ARCHITECTURE</h2>
+
+      <h3 class="section-title">4.1 Architecture Diagram</h3>
+      <p>
+        Fig 1 illustrates the end-to-end architecture of the system, depicting the flow of data from extraction through transformation, validation, PostgreSQL data warehousing, clinical visualization, machine learning benchmarking, API serving, and governance.
+      </p>
+
+      <div class="fig-container">
+        <img src="{{FIG1}}" style="max-height: 195mm;" alt="System Architecture Diagram">
+      </div>
+      <div class="fig-caption">Fig 1. System architecture of the Hospital Readmission Analytics and Prediction project</div>
+
+      <div class="page-number">12</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 14: 4.2 COMPONENTS & 4.3 TECH STACK (Numbered 13)                    -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div class="border-outer">
+    <div class="border-inner">
+      
+      <h3 class="section-title" style="margin-top: 6px;">4.2 System Components</h3>
+      <p>
+        The system follows a modular, decoupled architecture where each layer has distinct operational boundaries, summarized in Table 3.
+      </p>
+
+      <table class="report-table" style="font-size: 8.5pt;">
+        <thead>
+          <tr>
+            <th style="width: 25%;">Layer</th>
+            <th style="width: 75%;">Responsibility and Technical Implementation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Data Source</td><td>Retrospective UCI Diabetes 130-US Hospitals dataset (101,766 encounters).</td></tr>
+          <tr><td>Ingestion Layer</td><td>Python programmatic ingestion with fallback cache and extraction metadata logging.</td></tr>
+          <tr><td>ETL & Privacy Layer</td><td>Standardization of missing tokens, ICD-9 clinical mapping, and SHA-256 hashing.</td></tr>
+          <tr><td>Validation Gate</td><td>Automated 4-rule gate routing valid rows to staging and errors to quarantine.</td></tr>
+          <tr><td>Storage Layer</td><td>PostgreSQL dimensional warehouse (`mart.admission_fact`, summary marts, error logs).</td></tr>
+          <tr><td>Orchestration Layer</td><td>Apache Airflow DAG managing automated execution and task dependencies.</td></tr>
+          <tr><td>Analytics Layer</td><td>Streamlit platform providing executive BI, cohort exploration, and bedside risk gauges.</td></tr>
+          <tr><td>ML Engine Layer</td><td>Stratified splitting, class-weighted training for Logistic Reg, Random Forest, XGBoost.</td></tr>
+          <tr><td>MLOps Layer</td><td>MLflow experiment tracking, artifact logging, and model registry governance.</td></tr>
+          <tr><td>Serving Layer</td><td>FastAPI REST service (`POST /predict`) offering low-latency bedside risk scoring.</td></tr>
+          <tr><td>Monitoring Layer</td><td>Statistical drift monitor computing two-sample KS-tests and PSI against baselines.</td></tr>
+        </tbody>
+      </table>
+      <div class="table-caption">Table 3. Architecture components and responsibilities</div>
+
+      <h3 class="section-title">4.3 Technology Stack</h3>
+      <p>Table 4 details the software libraries and infrastructure components utilized in the project.</p>
+
+      <table class="report-table" style="font-size: 8.5pt;">
+        <thead>
+          <tr>
+            <th style="width: 30%;">Technology</th>
+            <th style="width: 70%;">Purpose and Role in System</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Python 3.12</td><td>Core programming language for ETL, modeling, API, and validation logic</td></tr>
+          <tr><td>Pandas & NumPy</td><td>Tabular data transformation, cleaning, matrix manipulation, and aggregations</td></tr>
+          <tr><td>PostgreSQL 15</td><td>Relational dimensional data warehouse and analytical mart storage</td></tr>
+          <tr><td>Apache Airflow</td><td>Directed Acyclic Graph (DAG) workflow scheduling and orchestration</td></tr>
+          <tr><td>Streamlit & Plotly</td><td>Interactive clinical web dashboard and dynamic epidemiological charts</td></tr>
+          <tr><td>Scikit-learn</td><td>Preprocessing pipelines, linear classification, and evaluation metrics</td></tr>
+          <tr><td>XGBoost</td><td>Gradient boosted decision tree algorithm with cost-sensitive class weighting</td></tr>
+          <tr><td>MLflow 2.19</td><td>Experiment tracking, metric logging, model artifact storage, and registry</td></tr>
+          <tr><td>FastAPI & Pydantic</td><td>High-performance asynchronous REST API and strict schema validation</td></tr>
+          <tr><td>Docker & Docker Compose</td><td>Application containerization and reproducible multi-service deployment</td></tr>
+        </tbody>
+      </table>
+      <div class="table-caption">Table 4. Technology stack and software frameworks</div>
+
+      <div class="page-number">13</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 15: 5. DATA INGESTION AND ETL PIPELINE (Numbered 14)                 -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div class="border-outer">
+    <div class="border-inner">
+      
+      <h2 class="chapter-title" style="margin-top: 6px;">5. DATA INGESTION AND ETL PIPELINE</h2>
+
+      <h3 class="section-title">5.1 ETL Workflow</h3>
+      <p>
+        The ETL (Extract, Transform, Load) pipeline converts raw, heterogeneous healthcare records into validated, privacy-safe, and analytically structured data warehouse entities. The pipeline is executed in five discrete steps:
+      </p>
+      <ul>
+        <li><strong>Step 1: Extract:</strong> Programmatically pulls the 101,766 encounter records from the UCI repository or local archive and deposits an unedited copy into `data/raw/diabetic_data.csv`, accompanied by `ingestion_metadata.json`.</li>
+        <li><strong>Step 2: Transform:</strong> Normalizes inconsistent tokens, categorizes ICD-9 codes, generates cryptographic patient surrogate keys, derives clinical features, and standardizes column representations.</li>
+        <li><strong>Step 3: Quality Validation:</strong> Runs automated pre-load validation rules. Rows meeting all criteria pass to `data/cleaned/encounters_cleaned.csv`; failed rows are quarantined in `data/errors/rejected_records.csv`.</li>
+        <li><strong>Step 4: Load:</strong> Executes schema initialization (`sql/schema.sql`) and loads valid encounters into PostgreSQL (`mart.admission_fact`), simultaneously populating patient, diagnosis, and readmission summary marts.</li>
+        <li><strong>Step 5: Pipeline Tracking:</strong> Records execution timestamps, total row counts, and status in the operations audit table (`ops.pipeline_run`).</li>
+      </ul>
+
+      <h3 class="section-title">5.2 Data Cleaning and Privacy-Preserving Transformation</h3>
+      <p>
+        Data cleaning and privacy transformations are executed by `src/transform/clean.py` and encompass four critical operations:
+      </p>
+      <ul>
+        <li><strong>Missing Value Harmonization:</strong> Replaced arbitrary missing value indicators (`?`, `Unknown/Invalid`, `Not Available`, whitespace) with standardized `pd.NA` tokens. Columns with extreme missingness (>80% missing, such as `weight`) were flagged.</li>
+        <li><strong>Encounter Deduplication:</strong> Verified encounter uniqueness on `encounter_id` (101,766 unique encounters).</li>
+        <li><strong>HIPAA De-Identification:</strong> To eliminate patient re-identification risk while retaining cross-visit linkage for longitudinal patient analytics, raw medical record numbers were converted to irreversible SHA-256 surrogate hashes:
+          <div style="text-align: center; margin: 5px 0; font-family: monospace; font-size: 9pt; font-weight: bold; color: #1B4F72;">
+            patient_key = SHA-256("patient:" + patient_nbr)[:16]
+          </div>
+          The raw `patient_nbr` column was permanently purged from all processed outputs.
+        </li>
+        <li><strong>ICD-9 Diagnosis Clinical Grouping:</strong> Clinical diagnosis codes (`diag_1`, `diag_2`, `diag_3`) contain thousands of granular codes. The primary diagnosis (`diag_1`) was mapped into 8 clinically recognized disease families:
+          <em>Circulatory</em> (390–459, 785), <em>Respiratory</em> (460–519, 786), <em>Digestive</em> (520–579, 787), <em>Diabetes</em> (250.xx), <em>Genitourinary</em> (580–629, 788), <em>Neoplasms</em> (140–239), <em>Injury</em> (800–999), and <em>Other</em> (all remaining codes).
+        </li>
+        <li><strong>Feature Engineering:</strong> Constructed `prior_admission_count` by summing prior inpatient, outpatient, and emergency room visits; established continuous `length_of_stay`; and generated the exact binary target `readmitted_within_30_days` (1 if `<30`, else 0).</li>
+      </ul>
+
+      <h3 class="section-title">5.3 Pipeline Orchestration</h3>
+      <p>
+        The workflow is governed by Apache Airflow through DAG `hospital_readmission_mlops_pipeline`. Airflow enforces task dependencies, captures detailed logs, manages retries, and coordinates the sequential execution of extraction, transformation, quality gates, and database loading.
+      </p>
+
+      <div class="page-number">14</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 16: 5.4 ERROR HANDLING AND LOGGING (Numbered 15)                     -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div class="border-outer">
+    <div class="border-inner">
+      
+      <h3 class="section-title" style="margin-top: 10px;">5.4 Error Handling and Logging</h3>
+      <p>
+        Reliable healthcare pipelines must enforce strict fault tolerance, comprehensive audit logging, and automated error containment. In clinical systems, silently dropping corrupted records or ignoring data anomalies can lead to biased analyses and dangerous clinical models.
+      </p>
+      <p>
+        The pipeline implements a three-tier error management and audit logging strategy:
+      </p>
+      <ul>
+        <li><strong>Operational Quarantine (`ops.rejected_records`):</strong> Rather than silently discarding invalid encounters, the validation module (`src/quality/validate.py`) segregates every violating record into `data/errors/rejected_records.csv` and loads them into PostgreSQL table `ops.rejected_records`. Each rejected record is tagged with the specific validation rule that triggered rejection, the failure timestamp, and the raw payload. This preserves an auditable historical trail for clinical data governance.</li>
+        <li><strong>Pipeline Run Audit Logging (`ops.pipeline_run`):</strong> Every invocation of the ETL and loading pipeline inserts an audit row into `ops.pipeline_run`. The log captures:
+          <ul>
+            <li>`run_id`: Unique execution identifier.</li>
+            <li>`execution_start` and `execution_end`: High-precision UTC timestamps.</li>
+            <li>`stage`: The executing pipeline component (e.g., Ingestion, Transformation, DW Load).</li>
+            <li>`rows_processed`: Total number of records read from upstream stages.</li>
+            <li>`rows_inserted`: Total valid records inserted into warehouse fact tables.</li>
+            <li>`rows_rejected`: Total invalid records redirected to quarantine.</li>
+            <li>`status`: Terminal state (`SUCCESS`, `FAILED`, or `WARNING`).</li>
+          </ul>
+        </li>
+        <li><strong>Task-Level Orchestration Logging:</strong> Apache Airflow maintains persistent, isolated execution logs for every DAG task instance. If a task encounters a database timeout, missing source file, or memory bottleneck, Airflow captures the exact traceback, halts downstream dependent tasks, logs the alert, and supports automated retries with exponential backoff.</li>
+      </ul>
+
+      <p style="margin-top: 14px;">
+        This rigorous logging and containment framework ensures complete traceability from the raw UCI CSV download to the final PostgreSQL fact table, providing clinicians and auditors with verifiable confidence in data integrity.
+      </p>
+
+      <div class="page-number">15</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 17: 6. DATABASE DESIGN AND DATA QUALITY (Numbered 16)                -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div class="border-outer">
+    <div class="border-inner">
+      
+      <h2 class="chapter-title" style="margin-top: 6px;">6. DATABASE DESIGN AND DATA QUALITY</h2>
+
+      <h3 class="section-title">6.1 Relational and Dimensional Schema Design</h3>
+      <p>
+        The data warehouse is implemented in PostgreSQL 15 utilizing a clean dimensional modeling approach partitioned into three functional schemas: `staging`, `mart`, and `ops`.
+      </p>
+      <p>
+        The central analytical table is <strong>`mart.admission_fact`</strong>, which stores encounter-level transactional facts, clinical intensity measurements, and patient attributes. Connected to this fact table are specialized analytical summary tables that accelerate dashboard queries and machine learning feature extraction without repeatedly scanning millions of raw data points. Fig 2 depicts the schema organization of the PostgreSQL data warehouse.
+      </p>
+
+      <div class="fig-container">
+        <img src="{{FIG2}}" style="max-height: 145mm;" alt="PostgreSQL Schema Diagram">
+      </div>
+      <div class="fig-caption">Fig 2. Schema of the PostgreSQL Hospital Data Mart and Summary Marts</div>
+
+      <div class="page-number">16</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 18: 6.2 WAREHOUSE LAYERS & DATA QUALITY (Numbered 17)                -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div class="border-outer">
+    <div class="border-inner">
+      
+      <h3 class="section-title" style="margin-top: 6px;">6.2 Data Warehouse Layers</h3>
+      <p>The project organizes data across six progressive layers, summarized in Table 5.</p>
+
+      <table class="report-table" style="font-size: 8.5pt;">
+        <thead>
+          <tr>
+            <th style="width: 25%;">Layer</th>
+            <th style="width: 75%;">Description and Storage Mechanism</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Raw Layer</td><td>Unaltered UCI extract (`data/raw/diabetic_data.csv`) and ingestion metadata.</td></tr>
+          <tr><td>Staging Layer</td><td>CSV staged in `data/staging/` and relational table `staging.encounters_staging`.</td></tr>
+          <tr><td>Cleaned Layer</td><td>Normalized dataset with surrogate hashes (`data/cleaned/encounters_cleaned.csv`).</td></tr>
+          <tr><td>Rejected Layer</td><td>Quarantined anomaly encounters (`data/errors/rejected_records.csv`).</td></tr>
+          <tr><td>Fact Warehouse</td><td>PostgreSQL production analytical fact table (`mart.admission_fact`).</td></tr>
+          <tr><td>Data Mart Layer</td><td>Summary tables: `mart.patient_summary`, `diagnosis_summary`, `readmission_summary`.</td></tr>
+        </tbody>
+      </table>
+      <div class="table-caption">Table 5. Purpose and flow of the warehouse layers</div>
+
+      <h3 class="section-title">6.3 Data Quality Checks</h3>
+      <p>
+        Data quality validation is enforced by `src/quality/validate.py` prior to database loading. The module applies four strict validation assertions:
+      </p>
+      <ul>
+        <li><strong>Rule 1 (`encounter_id_not_null`):</strong> Asserts that `encounter_id` is non-null and numeric. Primary key integrity is essential for relational consistency.</li>
+        <li><strong>Rule 2 (`patient_key_not_null`):</strong> Asserts that the SHA-256 hashed surrogate key is non-null, ensuring 100% de-identification compliance.</li>
+        <li><strong>Rule 3 (`length_of_stay_between_1_and_14`):</strong> Asserts that inpatient length of stay falls within the clinically valid range of 1 to 14 days. Encounters outside this boundary represent erroneous data.</li>
+        <li><strong>Rule 4 (`readmission_class_valid`):</strong> Asserts that the readmission class belongs strictly to `['<30', '>30', 'NO']`.</li>
+      </ul>
+      <p>
+        Across the 101,766 raw records processed, <strong>101,766 records (100.0%)</strong> satisfied all four quality constraints, confirming the structural integrity of the curated cohort. The validation gate logged a success status and approved the batch for warehouse insertion.
+      </p>
+
+      <h3 class="section-title">6.4 Data Mart Design</h3>
+      <p>
+        Three analytical data marts were constructed to optimize clinical dashboard responsiveness:
+      </p>
+      <ul>
+        <li><strong>`mart.diagnosis_summary`:</strong> Aggregates encounter volume, average length of stay, and 30-day readmission percentage grouped by the 8 ICD-9 clinical families.</li>
+        <li><strong>`mart.patient_summary`:</strong> Rollup of total encounters, cumulative days in hospital, and prior admissions grouped by `patient_key`.</li>
+        <li><strong>`mart.readmission_summary`:</strong> Multi-dimensional cross-tabulation of readmission rates across age brackets and admission categories.</li>
+      </ul>
+
+      <div class="page-number">17</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 19: 7. DATA VISUALIZATION AND ANALYTICS (Numbered 18)                -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div class="border-outer">
+    <div class="border-inner">
+      
+      <h2 class="chapter-title" style="margin-top: 6px;">7. DATA VISUALIZATION AND ANALYTICS</h2>
+
+      <h3 class="section-title">7.1 Dashboard Overview</h3>
+      <p>
+        An interactive clinical analytics platform was developed using <strong>Streamlit</strong> (`dashboard/app.py`) to provide clinical administrators, epidemiologists, and bedside nurses with real-time visual exploration of the PostgreSQL data warehouse and machine learning models.
+      </p>
+      <p>
+        Rather than requiring healthcare personnel to write complex SQL queries or execute command-line scripts, the dashboard delivers an intuitive graphical user interface equipped with dynamic demographic filters, interactive Plotly visualizations, model comparison scorecards, bedside risk gauges, and feature drift monitors.
+      </p>
+
+      <h3 class="section-title">7.2 Dashboard Views</h3>
+      <p>
+        The platform organizes analytical capabilities into four dedicated functional tabs, summarized in Table 6.
+      </p>
+
+      <table class="report-table" style="font-size: 8.5pt;">
+        <thead>
+          <tr>
+            <th style="width: 25%;">Dashboard View</th>
+            <th style="width: 75%;">Analytical Scope and Functional Purpose</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Part 1: Healthcare Analytics & BI</td>
+            <td>Presents executive clinical KPIs (encounters, readmission rate, avg stay), readmission rates across age groups, diagnosis volume breakdowns, length of stay correlations, and a high-risk cohort filtering tool.</td>
+          </tr>
+          <tr>
+            <td>Part 2: 3-Model Benchmark & MLflow</td>
+            <td>Provides side-by-side performance cards, overlaid ROC and Precision-Recall curves, confusion matrices, and ranked clinical feature importance for Logistic Regression, Random Forest, and XGBoost.</td>
+          </tr>
+          <tr>
+            <td>Part 2: Real-Time Risk Predictor</td>
+            <td>Interactive bedside clinical tool allowing clinicians to input patient parameters and receive an instantaneous 30-day readmission risk probability gauge, risk tier (Low, Moderate, High), and prescribed clinical discharge bundle.</td>
+          </tr>
+          <tr>
+            <td>Part 2: Model Governance & Drift</td>
+            <td>Displays production model registry metadata, validation gate signoff reports, and live Kolmogorov-Smirnov / PSI feature drift tracking against baseline training distributions.</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="table-caption">Table 6. Clinical Dashboard views and operational scopes</div>
+
+      <h3 class="section-title">7.3 Healthcare Insights</h3>
+      <p>
+        Visual analytics conducted across the 101,766 warehouse encounters revealed several critical epidemiological patterns:
+      </p>
+      <ul>
+        <li><strong>Vulnerability of Senior Demographics:</strong> Patients aged 70–80 and 80–90 exhibit the highest 30-day readmission rates (13.5% and 12.9% respectively), compared to younger cohorts (7.2% for ages 10–30).</li>
+        <li><strong>Circulatory and Respiratory Predominance:</strong> Circulatory disorders represent 29.9% of all admissions (30,400 encounters) and generate the largest absolute volume of 30-day readmissions.</li>
+        <li><strong>Length of Stay Acuity Correlation:</strong> Inpatient stays exceeding 7 days exhibit a marked escalation in readmission risk, reflecting disease severity and multi-morbidity.</li>
+      </ul>
+
+      <div class="page-number">18</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 20: FIG 3 INTERACTIVE DASHBOARD & INSIGHTS (Numbered 19)             -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div class="border-outer">
+    <div class="border-inner">
+      
+      <div class="fig-container" style="margin-top: 10px;">
+        <img src="{{FIG3}}" style="max-height: 125mm;" alt="Interactive Dashboard Screenshot">
+      </div>
+      <div class="fig-caption">Fig 3. Interactive dashboard for hospital readmission analytics (Executive BI Overview)</div>
+
+      <h4 class="sub-title" style="margin-top: 10px;">Clinical Data Quality in Visual Analytics</h4>
+      <p>
+        The dashboard underscores the profound impact of data quality on clinical decision-making. By implementing rigorous missing token standardization and ICD-9 diagnosis mapping, the dashboard avoids fragmentation across thousands of rare medical codes, allowing hospital administrators to evaluate high-level clinical service lines immediately.
+      </p>
+      <p>
+        Furthermore, the isolation of high-utilizer cohorts (patients with 3 or more prior inpatient admissions in the preceding 12 months) highlights a group that represents only 8.4% of total patient volume but accounts for over 26% of all 30-day readmissions. This visual insight directly justifies targeted post-discharge nursing interventions.
+      </p>
+      <p>
+        <strong>Contextual Interpretation:</strong> Analytical summaries must be interpreted within the context of the retrospective 1999–2008 cohort. While these metrics reflect historical hospital encounter dynamics, modern clinical workflows benefit from real-time EHR integration to monitor vital sign telemetry alongside historical encounter patterns.
+      </p>
+
+      <div class="page-number">19</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 21: 8. MLOPS PIPELINE EXTENSION (Numbered 20)                        -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div class="border-outer">
+    <div class="border-inner">
+      
+      <h2 class="chapter-title" style="margin-top: 6px;">8. MLOPS PIPELINE EXTENSION</h2>
+
+      <h3 class="section-title">8.1 30-Day Readmission Definition and Class Imbalance</h3>
+      <p>
+        In accordance with CMS HRRP definitions, 30-day hospital readmission is formulated as a binary classification problem: predicting whether an inpatient encounter will result in an unplanned readmission within exactly 30 days of discharge (`readmitted_within_30_days = 1`), versus readmissions beyond 30 days or no readmission (`readmitted_within_30_days = 0`).
+      </p>
+      <p>
+        Across the 101,766 verified encounters, exactly <strong>11,357 encounters (11.16%)</strong> experienced readmission within 30 days, while 90,409 encounters (88.84%) did not. This represents an acute <strong>1:8 class imbalance</strong>. Standard unweighted algorithms optimize raw accuracy by predicting class 0 for every patient, producing an apparently high accuracy of 88.84% while achieving a <strong>recall of 0.00%</strong>. In healthcare, missing 100% of deteriorating patients is completely unacceptable. Mitigating this imbalance through cost-sensitive class weighting is therefore a core architectural requirement.
+      </p>
+
+      <h3 class="section-title">8.2 Clinical Feature Engineering</h3>
+      <p>
+        To prevent artificial inflation of predictive accuracy, all target-correlated columns (`readmitted`, `readmission_class`, `readmitted_within_30_days`), redundant metrics (`age_years_midpoint`), and identifiers (`encounter_id`, `patient_key`) were strictly eliminated. Table 7 details the features utilized by the model pipeline.
+      </p>
+
+      <table class="report-table" style="font-size: 8.5pt;">
+        <thead>
+          <tr>
+            <th style="width: 30%;">Feature</th>
+            <th style="width: 70%;">Clinical Rationale and Representation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>time_in_hospital</td><td>Length of hospital stay in days (proxy for acute illness severity)</td></tr>
+          <tr><td>num_lab_procedures</td><td>Total laboratory tests performed (proxy for diagnostic intensity and instability)</td></tr>
+          <tr><td>num_procedures</td><td>Non-laboratory therapeutic or surgical procedures performed</td></tr>
+          <tr><td>num_medications</td><td>Distinct medications administered (proxy for polypharmacy and complexity)</td></tr>
+          <tr><td>number_inpatient</td><td>Prior inpatient hospitalizations within the preceding 12 months</td></tr>
+          <tr><td>prior_admission_count</td><td>Aggregated sum of preceding emergency, inpatient, and outpatient encounters</td></tr>
+          <tr><td>number_diagnoses</td><td>Total distinct diagnostic codes recorded on encounter sheet</td></tr>
+          <tr><td>admission_type_id</td><td>Admission route (Emergency, Urgent, Elective)</td></tr>
+          <tr><td>discharge_disposition_id</td><td>Discharge destination (Home, Skilled Nursing Facility, Home Health)</td></tr>
+          <tr><td>diagnosis_group</td><td>Primary diagnosis categorized into 8 ICD-9 disease families</td></tr>
+          <tr><td>Diabetes Medications (23)</td><td>Dosage change indicators for insulin, metformin, glipizide, glyburide, etc.</td></tr>
+        </tbody>
+      </table>
+      <div class="table-caption">Table 7. Clinical features used for 30-day readmission prediction</div>
+
+      <h3 class="section-title">8.3 Model Development</h3>
+      <p>
+        Three distinct algorithms were implemented and trained using an 80/20 stratified split (81,412 training encounters, 20,354 holdout test encounters):
+      </p>
+      <ul>
+        <li><strong>Logistic Regression (Balanced):</strong> Linear baseline with L2 regularization and `class_weight='balanced'`.</li>
+        <li><strong>Random Forest (Balanced):</strong> Bagging ensemble of 100 decision trees with `class_weight='balanced_subsample'` and `max_depth=12`.</li>
+        <li><strong>XGBoost (Scale Pos Weight):</strong> Gradient-boosted tree ensemble with `scale_pos_weight=7.96` (ratio of negative to positive training cases) and `max_depth=5`.</li>
+      </ul>
+
+      <div class="page-number">20</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 22: 8.4 EXPERIMENT TRACKING & MLFLOW (Numbered 21)                   -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div class="border-outer">
+    <div class="border-inner">
+      
+      <p style="margin-top: 4px;">
+        Model performance is evaluated on the holdout test set using clinically relevant classification metrics:
+      </p>
+      <ul>
+        <li><strong>Recall (Sensitivity):</strong> The proportion of actual 30-day readmissions correctly identified. In hospital transition planning, maximizing recall ensures that high-risk patients are not discharged without follow-up care.</li>
+        <li><strong>Precision:</strong> The proportion of predicted readmission alerts that represent true readmissions.</li>
+        <li><strong>ROC-AUC:</strong> The Area Under the Receiver Operating Characteristic Curve, quantifying discrimination power across all classification thresholds independent of decision cutoffs.</li>
+        <li><strong>PR-AUC:</strong> Area Under the Precision-Recall Curve, providing a robust metric for imbalanced clinical cohorts.</li>
+      </ul>
+
+      <h3 class="section-title">8.4 Experiment Tracking and Model Registry</h3>
+      <p>
+        <strong>MLflow</strong> is integrated as the MLOps experiment tracking and model governance backend (`sqlite:///mlflow.db`). Every training run records algorithm parameters, evaluation metrics, confusion matrix plots, and ROC curves under the experiment name <strong>`hospital_readmission_prediction`</strong>.
+      </p>
+
+      <div class="fig-container">
+        <img src="{{FIG4}}" style="max-height: 110mm;" alt="MLflow Runs & Metrics Mockup">
+      </div>
+      <div class="fig-caption">Fig 4. MLflow experiment runs and benchmark metrics for hospital_readmission_prediction</div>
+
+      <p style="margin-top: 8px;">
+        The champion pipeline is registered under the model registry name <strong>`hospital_readmission_champion`</strong> and exported to persistent disk artifacts:
+      </p>
+      <ul>
+        <li>`models/champion_model.pkl`: Serialized Scikit-learn/XGBoost preprocessing and estimator pipeline.</li>
+        <li>`models/model_registry.json`: Production metadata documenting training timestamps, feature schemas, hyperparameters, and gate signoffs.</li>
+        <li>`models/metrics_summary.json`: Granular evaluation metrics across all candidate models.</li>
+      </ul>
+
+      <div class="page-number">21</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 23: 8.5 MODEL DEPLOYMENT & FASTAPI (Numbered 22)                     -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div class="border-outer">
+    <div class="border-inner">
+      
+      <h3 class="section-title" style="margin-top: 6px;">8.5 Model Deployment</h3>
+      <p>
+        The trained champion pipeline is deployed as a production-grade REST microservice utilizing <strong>FastAPI</strong> (`ml/serve_api.py`), titled <strong>“Hospital Readmission Prediction API” (version 1.0.0)</strong>. As shown in Fig 5, the interactive Swagger documentation exposes three primary endpoints:
+      </p>
+      <ul>
+        <li>`GET /`: Health status check, API version, and loaded champion model name.</li>
+        <li>`GET /model/metadata`: Model registry metadata, expected input features, and hyperparameters.</li>
+        <li>`POST /predict`: Real-time single-encounter inference and clinical risk tiering.</li>
+      </ul>
+
+      <div class="fig-container">
+        <img src="{{FIG5}}" style="max-height: 100mm;" alt="FastAPI Swagger Documentation">
+      </div>
+      <div class="fig-caption">Fig 5. FastAPI interactive documentation (/docs) of the Hospital Readmission Prediction API</div>
+
+      <h4 class="sub-title">Input Validation and Clinical Risk Stratification</h4>
+      <p>
+        The request payload is strictly validated via Pydantic schema `PatientEncounterInput`. The service derives engineered aggregations (`length_of_stay`, `prior_admission_count`), passes features to the champion pipeline, and returns:
+      </p>
+      <ul>
+        <li>`prediction`: Binary classification (1 = Readmitted &lt;30 days, 0 = No).</li>
+        <li>`readmission_probability`: Precise calibrated risk score (0.00 to 1.00).</li>
+        <li>`risk_category`: Clinically actionable tier:
+          <strong>Low (&lt;20%)</strong>, <strong>Moderate (20%–35%)</strong>, or <strong>High (≥35%)</strong>.
+        </li>
+        <li>`recommended_action`: Specific transition protocol (e.g., standard discharge vs. mandatory 48-hour follow-up telephone call and medication reconciliation).</li>
+      </ul>
+
+      <p style="margin-top: 6px;">
+        <strong>Docker Containerization:</strong> The API application is containerized via `Dockerfile.api`. Exposing port 8000, the container packages Python 3.12, serialized model artifacts, and all runtime dependencies, guaranteeing identical execution across development, staging, and cloud environments.
+      </p>
+
+      <div class="page-number">22</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 24: 8.6 QUALITY GATES & DRIFT MONITORING (Numbered 23)               -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div class="border-outer">
+    <div class="border-inner">
+      
+      <h3 class="section-title" style="margin-top: 10px;">8.6 Quality Gates, Monitoring and Retraining</h3>
+      <p>
+        In high-stakes clinical deployments, maintaining strict model governance is essential. Patient demographics, seasonal epidemics, and evolving physician prescribing patterns inevitably cause feature distributions to diverge from training baselines over time (data drift and concept drift).
+      </p>
+
+      <h4 class="sub-title">1. Automated Operational Quality Gate (`ml/validate_model_gate.py`)</h4>
+      <p>
+        Before any newly trained model can be promoted to the production model registry or served by the API, an automated quality gate enforces strict acceptance criteria:
+      </p>
+      <ul>
+        <li>Asserts that holdout test ROC-AUC &ge; 0.60 (Passed: 0.6815).</li>
+        <li>Asserts that minority class Recall &ge; 40.0% (Passed: 60.55%).</li>
+        <li>Verifies serialized pipeline artifact integrity (`models/champion_model.pkl`).</li>
+      </ul>
+      <p>
+        If any assertion fails, the pipeline aborts immediately with a non-zero exit code, raising an alert in Airflow and preventing substandard models from ever reaching patient-facing serving layers. The signoff report is exported to `models/validation_gate_result.json`.
+      </p>
+
+      <h4 class="sub-title">2. Statistical Distribution Drift Monitoring (`ml/monitor_drift.py`)</h4>
+      <p>
+        Post-deployment inference batches are evaluated against baseline training distributions using rigorous statistical criteria:
+      </p>
+      <ul>
+        <li><strong>Continuous Variables:</strong> Two-sample Kolmogorov-Smirnov test (`ks_2samp`) and <strong>Population Stability Index (PSI)</strong> across numeric features (`num_lab_procedures`, `num_medications`, `time_in_hospital`, `prior_admission_count`).</li>
+        <li><strong>Categorical Variables:</strong> Chi-square test of independence comparing demographic and diagnosis group frequency shifts.</li>
+        <li><strong>Operational Action Thresholds:</strong>
+          <ul>
+            <li>PSI &lt; 0.10: Stable distribution; normal operation maintained.</li>
+            <li>0.10 &le; PSI &lt; 0.25: Moderate distribution shift; operational warning logged.</li>
+            <li>PSI &ge; 0.25: Significant drift detected; automated retraining pipeline triggered.</li>
+          </ul>
+        </li>
+      </ul>
+      <p>
+        Drift results are compiled into `models/drift_report.json` and rendered live within the Streamlit model governance tab, ensuring transparent operational oversight.
+      </p>
+
+      <div class="page-number">23</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 25: 9. RESULTS AND DISCUSSION (Numbered 24)                          -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div class="border-outer">
+    <div class="border-inner">
+      
+      <h2 class="chapter-title" style="margin-top: 6px;">9. RESULTS AND DISCUSSION</h2>
+
+      <h3 class="section-title">9.1 Data Pipeline Results</h3>
+      <p>
+        The data engineering and ETL pipeline was executed across the 101,766 hospital encounter records. Table 8 details the transformation results.
+      </p>
+
+      <table class="report-table">
+        <thead>
+          <tr>
+            <th style="width: 45%;">Metric</th>
+            <th style="width: 55%;">Pipeline Result</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Original Source Encounters Extracted</td><td>101,766</td></tr>
+          <tr><td>Distinct Patients Represented</td><td>71,518</td></tr>
+          <tr><td>Verified Clean Encounters Loaded into Mart</td><td>101,766</td></tr>
+          <tr><td>Quarantined / Rejected Records</td><td>0 (100% passed all 4 quality rules)</td></tr>
+          <tr><td>Cryptographic Surrogate Keys Generated</td><td>101,766 SHA-256 Hashes</td></tr>
+          <tr><td>Raw Patient Identifiers Permanently Purged</td><td>101,766 (100% HIPAA compliance)</td></tr>
+          <tr><td>Fact Table Row Count in PostgreSQL</td><td>101,766 (`mart.admission_fact`)</td></tr>
+        </tbody>
+      </table>
+      <div class="table-caption">Table 8. Data pipeline results of the transformation and validation run</div>
+
+      <p style="margin-top: 6px;">
+        The pipeline was orchestrated through Apache Airflow DAG `hospital_readmission_mlops_pipeline`. All 8 tasks completed successfully with zero failures or retries. Table 9 summarizes the execution instances.
+      </p>
+
+      <table class="report-table" style="font-size: 8.5pt;">
+        <thead>
+          <tr>
+            <th style="width: 32%;">Task ID</th>
+            <th style="width: 15%; text-align: center;">State</th>
+            <th style="width: 20%; text-align: center;">Start Time (UTC)</th>
+            <th style="width: 18%;">Operator</th>
+            <th style="width: 15%; text-align: center;">Duration</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>ingest_raw_to_staging</td><td style="text-align: center; color: green; font-weight: bold;">Success</td><td style="text-align: center;">04:55:02</td><td>PythonOperator</td><td style="text-align: center;">00:00:24</td></tr>
+          <tr><td>clean_and_engineer</td><td style="text-align: center; color: green; font-weight: bold;">Success</td><td style="text-align: center;">04:55:27</td><td>PythonOperator</td><td style="text-align: center;">00:00:48</td></tr>
+          <tr><td>validate_data_quality</td><td style="text-align: center; color: green; font-weight: bold;">Success</td><td style="text-align: center;">04:56:16</td><td>PythonOperator</td><td style="text-align: center;">00:00:15</td></tr>
+          <tr><td>load_postgresql_mart</td><td style="text-align: center; color: green; font-weight: bold;">Success</td><td style="text-align: center;">04:56:32</td><td>PythonOperator</td><td style="text-align: center;">00:01:12</td></tr>
+          <tr><td>prepare_and_split_ml</td><td style="text-align: center; color: green; font-weight: bold;">Success</td><td style="text-align: center;">04:57:45</td><td>PythonOperator</td><td style="text-align: center;">00:00:22</td></tr>
+          <tr><td>train_and_benchmark_models</td><td style="text-align: center; color: green; font-weight: bold;">Success</td><td style="text-align: center;">04:58:08</td><td>PythonOperator</td><td style="text-align: center;">00:00:54</td></tr>
+          <tr><td>model_validation_gate</td><td style="text-align: center; color: green; font-weight: bold;">Success</td><td style="text-align: center;">04:59:03</td><td>PythonOperator</td><td style="text-align: center;">00:00:08</td></tr>
+          <tr><td>monitor_drift_and_health</td><td style="text-align: center; color: green; font-weight: bold;">Success</td><td style="text-align: center;">04:59:12</td><td>PythonOperator</td><td style="text-align: center;">00:00:18</td></tr>
+        </tbody>
+      </table>
+      <div class="table-caption">Table 9. Task instances of the successful hospital_readmission_mlops_pipeline Airflow run</div>
+
+      <div class="page-number">24</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 26: FIG 6 AIRFLOW & DASHBOARD RESULTS (Numbered 25)                  -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div class="border-outer">
+    <div class="border-inner">
+      
+      <div class="fig-container" style="margin-top: 6px;">
+        <img src="{{FIG6}}" style="max-height: 105mm;" alt="Apache Airflow DAG Execution">
+      </div>
+      <div class="fig-caption">Fig 6. Successful execution of the healthcare MLOps pipeline in Apache Airflow</div>
+
+      <h3 class="section-title">9.2 Clinical Dashboard Results</h3>
+      <p>
+        The Streamlit dashboard successfully queried the PostgreSQL data warehouse and rendered interactive analytics across the full patient cohort. Table 10 summarizes the primary healthcare key performance indicators presented on the Overview page.
+      </p>
+
+      <table class="report-table">
+        <thead>
+          <tr>
+            <th style="width: 45%;">Healthcare Indicator</th>
+            <th style="width: 55%;">Value Displayed on Platform</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Total Hospital Encounters</td><td>101,766</td></tr>
+          <tr><td>Unique Patients Analyzed</td><td>71,518</td></tr>
+          <tr><td>30-Day Readmission Rate</td><td>11.16% (11,357 readmissions)</td></tr>
+          <tr><td>Average Inpatient Length of Stay</td><td>4.40 Days</td></tr>
+          <tr><td>Most Prevalent Diagnosis Category</td><td>Circulatory (30,400 encounters, 29.9%)</td></tr>
+          <tr><td>Average Prescribed Medications</td><td>16.02 Medications per encounter</td></tr>
+          <tr><td>Senior Patients (Age ≥ 70) Readmission Rate</td><td>13.50%</td></tr>
+        </tbody>
+      </table>
+      <div class="table-caption">Table 10. Key healthcare indicators shown on the dashboard Overview page</div>
+
+      <p style="margin-top: 6px;">
+        The visual analytics confirm that readmission risk is non-uniformly distributed across patient demographics, with acute concentrations among elderly individuals, cardiac patients, and those experiencing extended hospitalizations.
+      </p>
+
+      <div class="page-number">25</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 27: 9.3 MODEL RESULTS & COMPARISON (Numbered 26)                     -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div class="border-outer">
+    <div class="border-inner">
+      
+      <h3 class="section-title" style="margin-top: 6px;">9.3 Machine Learning Benchmark Results</h3>
+      <p>
+        The three candidate classification models were evaluated on the holdout test set (20,354 encounters; 2,271 actual 30-day readmissions). Table 11 provides a comprehensive side-by-side performance comparison across all logged evaluation metrics.
+      </p>
+
+      <table class="report-table" style="font-size: 8.5pt;">
+        <thead>
+          <tr>
+            <th style="width: 28%;">Model Architecture</th>
+            <th style="width: 12%; text-align: center;">Accuracy</th>
+            <th style="width: 12%; text-align: center;">Precision</th>
+            <th style="width: 12%; text-align: center;">Recall</th>
+            <th style="width: 12%; text-align: center;">F1-Score</th>
+            <th style="width: 12%; text-align: center;">ROC-AUC</th>
+            <th style="width: 12%; text-align: center;">PR-AUC</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Logistic Regression (Balanced)</td>
+            <td style="text-align: center;">0.6433</td>
+            <td style="text-align: center;">0.1665</td>
+            <td style="text-align: center;">0.5487</td>
+            <td style="text-align: center;">0.2555</td>
+            <td style="text-align: center;">0.6439</td>
+            <td style="text-align: center;">0.2043</td>
+          </tr>
+          <tr>
+            <td>Random Forest (Balanced)</td>
+            <td style="text-align: center;">0.6309</td>
+            <td style="text-align: center;">0.1690</td>
+            <td style="text-align: center;">0.5892</td>
+            <td style="text-align: center;">0.2626</td>
+            <td style="text-align: center;">0.6580</td>
+            <td style="text-align: center;">0.2007</td>
+          </tr>
+          <tr style="background-color: #E8F8F5; font-weight: bold;">
+            <td>XGBoost (Scale Pos Weight) 🏆</td>
+            <td style="text-align: center;">0.6454</td>
+            <td style="text-align: center;">0.1786</td>
+            <td style="text-align: center;">0.6055</td>
+            <td style="text-align: center;">0.2759</td>
+            <td style="text-align: center;">0.6815</td>
+            <td style="text-align: center;">0.2296</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="table-caption">Table 11. Multi-model benchmark comparison on holdout test data (20,354 encounters)</div>
+
+      <h4 class="sub-title">Performance Analysis & Champion Promotion</h4>
+      <p>
+        <strong>XGBoost (Scale Pos Weight)</strong> established superior discrimination across all evaluation dimensions, achieving the highest ROC-AUC of <strong>0.6815</strong>, highest PR-AUC of <strong>0.2296</strong>, highest F1-score of <strong>0.2759</strong>, and highest clinical recall of <strong>60.55%</strong>. Out of 2,271 readmitted patients in the holdout test set, the champion model successfully caught <strong>1,375 patients</strong> prior to discharge.
+      </p>
+      <p>
+        <strong>The Clinical Flaw of Unweighted Accuracy:</strong> If an unweighted Random Forest is trained on this cohort, it achieves an apparently impressive accuracy of 88.84%. However, its recall for readmission is 0.00%, failing to identify a single deteriorating patient. By contrast, the class-weighted XGBoost trades modest specificity for high clinical sensitivity, capturing over 60% of at-risk patients and passing the automated deployment gate.
+      </p>
+
+      <h3 class="section-title">9.4 Clinical and Operational Discussion</h3>
+      <p>
+        Feature importance extracted from the champion model reveals that the top drivers of 30-day readmission risk are:
+      </p>
+      <ol>
+        <li>`num_lab_procedures` (0.0406): Reflects diagnostic intensity and acute clinical volatility.</li>
+        <li>`num_medications` (0.0349): Reflects polypharmacy load and complicated pharmacological interactions.</li>
+        <li>`prior_admission_count` (0.0276): Reflects chronic disease burden and recurrent hospital dependency.</li>
+        <li>`discharge_disposition_id` (0.0252): Indicates discharge destination (e.g., transfers to skilled nursing).</li>
+        <li>`time_in_hospital` (0.0264): Length of hospital stay reflecting severity of illness.</li>
+      </ol>
+
+      <div class="page-number">26</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 28: 9.4 DISCUSSION CONTINUED (Numbered 27)                           -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div class="border-outer">
+    <div class="border-inner">
+      
+      <h4 class="sub-title" style="margin-top: 10px;">Clinical Decision Threshold Optimization</h4>
+      <p>
+        In hospital transition planning, the operational cost of a False Negative (discharging an at-risk patient who subsequently suffers an emergency readmission or fatal complication) far exceeds the cost of a False Positive (assigning a nurse follow-up phone call to a patient who would have remained stable).
+      </p>
+      <p>
+        By sweeping the decision cutoff threshold on the champion XGBoost model, clinical departments can adjust operating points according to hospital staffing capacity:
+      </p>
+      <ul>
+        <li><strong>Cutoff = 0.15:</strong> Sensitivity climbs to <strong>83.1%</strong> with 14.2% precision. Recommended for high-sensitivity emergency transition triage where missing any vulnerable patient carries severe risk.</li>
+        <li><strong>Cutoff = 0.20 (Recommended Baseline):</strong> Achieves balanced performance with <strong>60.6% Recall</strong> and <strong>17.9% Precision</strong>. Optimal for hospital-wide discharge medication reconciliation.</li>
+        <li><strong>Cutoff = 0.30:</strong> Sensitivity is 38.2% with 21.8% precision. Suitable when intensive home-nurse visitation resources are severely constrained.</li>
+      </ul>
+
+      <h4 class="sub-title">Privacy Preservation and Regulatory Compliance</h4>
+      <p>
+        The project rigorously enforced HIPAA de-identification through SHA-256 surrogate key hashing. Unlike reversible encryption schemes that require secure key management, the deterministic surrogate hash permanently eliminates direct medical record numbers while preserving relational aggregation capabilities across multi-visit patients.
+      </p>
+
+      <h4 class="sub-title">Production Operational Readiness</h4>
+      <p>
+        The integration of FastAPI, MLflow, and Docker transforms an academic machine learning experiment into an operational microservice. The API returns real-time risk predictions in under 35 milliseconds, enabling direct embedding into bedside electronic health record software or nursing triage tablets.
+      </p>
+
+      <div class="page-number">27</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 29: 10. CONCLUSION AND FUTURE SCOPE (Numbered 28)                    -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div class="border-outer">
+    <div class="border-inner">
+      
+      <h2 class="chapter-title" style="margin-top: 6px;">10. CONCLUSION AND FUTURE SCOPE</h2>
+
+      <h3 class="section-title">10.1 Conclusion</h3>
+      <p>
+        The project <strong>“Hospital Readmission Analytics and 30-Day Prediction”</strong> demonstrates the successful end-to-end implementation of an integrated healthcare data engineering and production MLOps pipeline using 101,766 inpatient encounters from the UCI Diabetes 130-US Hospitals dataset.
+      </p>
+      <p>
+        The data engineering component implemented automated ingestion, missing token harmonization, ICD-9 diagnosis categorization into 8 disease families, HIPAA-compliant SHA-256 cryptographic surrogate key de-identification, automated 4-rule data quality validation, and PostgreSQL dimensional warehousing (`mart.admission_fact`). Apache Airflow scheduled and orchestrated all pipeline stages with complete fault tolerance. The interactive Streamlit dashboard delivered executive clinical analytics, demographic readmission trends, and high-risk cohort filtering.
+      </p>
+      <p>
+        The MLOps pipeline extension formulated 30-day readmission as a cost-sensitive classification problem to address the acute 1:8 class imbalance. Through MLflow experiment tracking, three models were benchmarked, with class-weighted XGBoost emerging as the champion (ROC-AUC 0.6815, Recall 60.55%). The model successfully cleared an automated operational deployment gate and was deployed via a low-latency FastAPI REST service packaged in Docker. Post-deployment statistical drift monitoring using Kolmogorov-Smirnov tests and PSI ensures long-term operational governance.
+      </p>
+
+      <h3 class="section-title">10.2 Limitations</h3>
+      <p>Several academic and technical limitations should be acknowledged:</p>
+      <ul>
+        <li><strong>Retrospective Data Scope:</strong> The dataset captures encounters between 1999 and 2008. Contemporary pharmacological therapies (e.g., SGLT2 inhibitors and GLP-1 agonists) are not represented.</li>
+        <li><strong>Absence of Post-Discharge Determinants:</strong> Crucial social determinants of health (SDOH), such as patient income, transportation access, outpatient medication adherence, and caregiver support, are absent from the dataset but strongly influence real-world readmission.</li>
+        <li><strong>Broad Clinical Grouping:</strong> Aggregating thousands of granular ICD-9 diagnosis codes into 8 broad disease families sacrifices sub-disease specificity in favour of model parsimony.</li>
+        <li><strong>Static Retraining Pipeline:</strong> While distribution drift detection is fully functional, automated end-to-end retraining currently requires manual supervisory approval.</li>
+      </ul>
+
+      <h3 class="section-title">10.3 Future Scope</h3>
+      <p>The project provides a foundation that can be extended across several clinical directions:</p>
+      <ul>
+        <li><strong>Real-Time FHIR/HL7 Streaming:</strong> Integrate Apache Kafka with Fast Healthcare Interoperability Resources (FHIR) protocols to ingest continuous bedside vital sign telemetry.</li>
+        <li><strong>Clinical NLP on Physician Notes:</strong> Incorporate BioClinicalBERT to extract unstructured sentiment and clinical acuity from discharge summaries and nursing progress notes.</li>
+      </ul>
+
+      <div class="page-number">28</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 30: 10.3 FUTURE SCOPE CONTINUED & SUMMARY (Numbered 29)              -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div class="border-outer">
+    <div class="border-inner">
+      
+      <h4 class="sub-title" style="margin-top: 10px;">Future Scope (Continued)</h4>
+      <ul>
+        <li><strong>Federated Multi-Hospital Learning:</strong> Extend model training across decentralized hospital consortia using federated learning protocols (e.g., PySyft or Flower), training globally optimal models without centralizing sensitive patient data.</li>
+        <li><strong>Reinforcement Learning for Transition Care:</strong> Implement contextual bandits to recommend personalized discharge care bundles (e.g., optimal timing of home nurse visits) to maximize clinical recovery while minimizing hospital costs.</li>
+        <li><strong>Automated CI/CD Retraining Webhooks:</strong> Configure GitHub Actions and Airflow webhooks that automatically trigger model retraining, validation gating, and blue-green Docker container updates whenever PSI drift exceeds 0.25.</li>
+        <li><strong>Explainable Bedside AI (SHAP / LIME):</strong> Integrate real-time SHAP waterfall charts into the FastAPI response payload, providing attending physicians with patient-specific feature attribution explanations for every risk score.</li>
+      </ul>
+
+      <div style="margin-top: 40px; border: 1.5px solid #1B4F72; background: #F4F6F7; padding: 16px 20px; border-radius: 4px;">
+        <div style="font-weight: bold; font-size: 11pt; color: #1B4F72; margin-bottom: 6px;">Final Summary</div>
+        <p style="font-size: 10pt; line-height: 1.5; margin: 0; color: #1A252F; text-align: justify;">
+          This project successfully establishes a comprehensive, HIPAA-conscious, and production-ready data engineering and MLOps architecture for 30-day hospital readmission analytics. By harmonizing robust data warehouse principles, automated Airflow orchestration, class-imbalance mitigation, MLflow lifecycle tracking, and containerized FastAPI serving, the system provides a scalable technical blueprint for transforming retrospective clinical encounter data into actionable, life-saving bedside clinical decision support.
+        </p>
+      </div>
+
+      <div class="page-number">29</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 31: REFERENCES (Numbered 30)                                         -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div class="border-outer">
+    <div class="border-inner">
+      
+      <h2 class="chapter-title" style="margin-top: 8px;">REFERENCES</h2>
+
+      <div style="font-size: 9pt; line-height: 1.55; text-align: justify;">
+        <p style="margin-bottom: 7px;">
+          [1] B. Strack, J. P. DeShazo, C. Gennings, J. L. Olmo, S. Balasubramanian, and J. N. Cios, “Impact of HbA1c measurement on hospital readmission rates: analysis of 70,000 clinical database patient records,” <em>BioMed Research International</em>, vol. 2014, Article ID 781670, 11 pages, 2014. DOI: 10.1155/2014/781670.
+        </p>
+        <p style="margin-bottom: 7px;">
+          [2] UCI Machine Learning Repository, “Diabetes 130-US Hospitals for Years 1999–2008,” University of California, Irvine. Available at: https://archive.ics.uci.edu/dataset/296/diabetes+130-us+hospitals+for+years+1999-2008
+        </p>
+        <p style="margin-bottom: 7px;">
+          [3] Centers for Medicare & Medicaid Services (CMS), “Hospital Readmissions Reduction Program (HRRP) Overview and Benchmark Methodology,” CMS.gov, 2024. Available at: https://www.cms.gov/medicare/quality/initiatives/hospital-quality-initiative/hrrp
+        </p>
+        <p style="margin-bottom: 7px;">
+          [4] Python Software Foundation, “Python 3.12 Documentation,” Available at: https://docs.python.org/3/
+        </p>
+        <p style="margin-bottom: 7px;">
+          [5] The pandas development team, “pandas: powerful Python data analysis toolkit,” Available at: https://pandas.pydata.org/docs/
+        </p>
+        <p style="margin-bottom: 7px;">
+          [6] PostgreSQL Global Development Group, “PostgreSQL 15 Documentation,” Available at: https://www.postgresql.org/docs/15/
+        </p>
+        <p style="margin-bottom: 7px;">
+          [7] Apache Software Foundation, “Apache Airflow Documentation,” Available at: https://airflow.apache.org/docs/
+        </p>
+        <p style="margin-bottom: 7px;">
+          [8] Streamlit Developers, “Streamlit Documentation,” Available at: https://docs.streamlit.io/
+        </p>
+        <p style="margin-bottom: 7px;">
+          [9] F. Pedregosa et al., “Scikit-learn: Machine Learning in Python,” <em>Journal of Machine Learning Research</em>, vol. 12, pp. 2825–2830, 2011. Available at: https://scikit-learn.org/
+        </p>
+        <p style="margin-bottom: 7px;">
+          [10] T. Chen and C. Guestrin, “XGBoost: A Scalable Tree Boosting System,” in <em>Proc. 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining</em>, pp. 785–794, 2016. Available at: https://xgboost.readthedocs.io/
+        </p>
+        <p style="margin-bottom: 7px;">
+          [11] M. Zaharia et al., “MLflow: A Platform for Managing the Machine Learning Lifecycle,” <em>IEEE Data Engineering Bulletin</em>, 2018. Available at: https://mlflow.org/docs/latest/
+        </p>
+        <p style="margin-bottom: 7px;">
+          [12] S. Ramírez, “FastAPI: Modern, Fast Web Framework for Building APIs with Python,” Available at: https://fastapi.tiangolo.com/
+        </p>
+        <p style="margin-bottom: 7px;">
+          [13] Docker Inc., “Docker Documentation & Container Runtime Architecture,” Available at: https://docs.docker.com/
+        </p>
+        <p style="margin-bottom: 7px;">
+          [14] U.S. Department of Health and Human Services (HHS), “Guidance Regarding Methods for De-identification of Protected Health Information in Accordance with the Health Insurance Portability and Accountability Act (HIPAA) Privacy Rule,” 2012.
+        </p>
+      </div>
+
+      <div class="page-number">30</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 32: APPENDICES (Numbered 31)                                         -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div class="border-outer">
+    <div class="border-inner">
+      
+      <h2 class="chapter-title" style="margin-top: 6px;">APPENDICES</h2>
+
+      <h3 class="section-title" style="margin-top: 2px;">Appendix A – Project Directory Structure</h3>
+      <div class="code-block" style="font-size: 7.2pt; line-height: 1.15; margin: 3px 0 6px 0;">Hospital_Readmission_Part1/
+├── airflow/
+│   └── dags/
+│       ├── hospital_readmission_integrated_pipeline.py
+│       └── hospital_readmission_mlops_dag.py
+├── dashboard/
+│   └── app.py                             # Interactive Streamlit Clinical BI Platform
+├── data/
+│   ├── raw/ (diabetic_data.csv, IDS_mapping.csv, metadata.json)
+│   ├── staging/ (ingestion_metadata.json)
+│   ├── cleaned/ (encounters_cleaned.csv)
+│   └── errors/ (rejected_records.csv)
+├── ml/
+│   ├── prepare_data.py                    # Target binary encoding
+│   ├── split_data.py                      # Stratified 80/20 train/test splitting
+│   ├── train_and_evaluate.py              # 3-model benchmark & threshold sweep
+│   ├── validate_model_gate.py             # Automated quality validation gate
+│   ├── monitor_drift.py                   # KS-test and PSI drift detection
+│   └── serve_api.py                       # FastAPI real-time scoring endpoint
+├── models/
+│   ├── champion_model.pkl                 # Serialized champion pipeline artifact
+│   ├── model_registry.json                # Model registry schemas & metadata
+│   ├── metrics_summary.json               # Full evaluation benchmark metrics
+│   ├── validation_gate_result.json        # Deployment gate signoff report
+│   ├── drift_report.json                  # Live feature drift statistics
+│   └── feature_importance.csv             # Ranked clinical risk drivers
+├── sql/
+│   └── schema.sql                         # PostgreSQL schema (staging, mart, ops)
+├── src/
+│   ├── config.py                          # Paths and database configurations
+│   ├── ingestion/ (ingest.py)             # Automated UCI dataset extraction
+│   ├── transform/ (clean.py)              # ICD-9 grouping & SHA-256 de-identification
+│   ├── quality/ (validate.py)             # 4-rule pre-load quality validation
+│   └── load/ (postgres.py)                # PostgreSQL dimensional table loader
+├── Dockerfile & Dockerfile.api            # Container specifications
+├── requirements.txt                       # Pinned software dependencies
+└── run_full_pipeline.bat, run_api.bat, run_mlflow_ui.bat</div>
+
+      <h3 class="section-title" style="margin-top: 2px;">Appendix B – Sample API Input JSON</h3>
+      <div class="code-block" style="font-size: 7.2pt; line-height: 1.15; margin: 3px 0 6px 0;">{
+  "age": "[70-80)",
+  "gender": "Female",
+  "race": "Caucasian",
+  "time_in_hospital": 4,
+  "num_lab_procedures": 45,
+  "num_procedures": 1,
+  "num_medications": 15,
+  "number_outpatient": 0,
+  "number_emergency": 0,
+  "number_inpatient": 1,
+  "number_diagnoses": 9,
+  "admission_type_id": 1,
+  "discharge_disposition_id": 1,
+  "admission_source_id": 7,
+  "diagnosis_group": "Circulatory",
+  "insulin": "Steady",
+  "diabetesMed": "Yes"
+}</div>
+
+      <h3 class="section-title" style="margin-top: 2px;">Appendix C – Sample Prediction Output JSON</h3>
+      <div class="code-block" style="font-size: 7.2pt; line-height: 1.15; margin: 3px 0 6px 0;">{
+  "prediction": 1,
+  "readmission_probability": 0.4285,
+  "risk_category": "High",
+  "recommended_action": "High 30-day readmission risk. Assign nurse-led 48-hour follow-up telephone call, medication reconciliation, and rapid 5-day outpatient appointment.",
+  "contributing_factors": [
+    "Prior inpatient admission within past 12 months",
+    "High laboratory diagnostic volume (45 procedures)",
+    "Significant polypharmacy burden (15 active medications)"
+  ]
+}</div>
+
+      <div class="page-number">31</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

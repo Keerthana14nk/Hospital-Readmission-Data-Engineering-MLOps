@@ -1,0 +1,9 @@
+{
+  "gate_timestamp": "2026-10-13T13:21:07.557544+00:00",
+  "champion_model": "XGBoost (Scale Pos Weight)",
+  "checks_passed": true,
+  "roc_auc_check": true,
+  "recall_check": true,
+  "artifact_check": true,
+  "status": "APPROVED_FOR_DEPLOYMENT"
+}
